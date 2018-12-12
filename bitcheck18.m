@@ -197,3 +197,4 @@ ylabel('probability');
 axis([minhist maxhist 0 maxhisto]);
 legend('f(bit0)','f(bit1)');
 print -djpeg Bitcheck_figure1
+Nerror

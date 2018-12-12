@@ -1,58 +1,102 @@
 % generate bit matrix based on groupname_Bsize.mat
-clear all;
-load 'FTSIO_Bsize'; % get number of bits sizes
-load 'FTSIO_r';
-[M,N]=size(r)
-figure(1)
+clear;
+load 'FTSIO_B.mat';
+load 'FTSIO_Bsize.mat';
+% generate a real vector s, N=131072*8 or let N be less for debug process
+N=131072*8 % N is set by instructor and cannot be changed
+% CREATE THE MESSAGE SIGNAL
 Nsample=floor(N/Nbit)
+% form pulse shape
+pulseshape=ones(1,Nsample);
+% modulate sequence to either +1 and -1 values
+b1(1:Nbit)=2*B(1,1:Nbit)-1;
+stemp=kron(b1,pulseshape); % form continuous time approximation of message
+sm=-ones(1,N);
+if N > (Nsample*Nbit)
+    sm(1:(Nsample*Nbit))=stemp(1:(Nsample*Nbit));
+else
+    sm=stemp;
+end
+size(sm) % verify shape
+% plot message signal or a section of the message signal
+figure(1);
 if Nbit<41
-    plot(r);
+    plot(sm);
     axis([1,N,-1.1,1.1]);
-    xlabel('Received DSBSC Signal');
+    xlabel('Message Signal');
 else
-    Ntemp=Nsample*40;
-    plot(r(1:Ntemp));
-    axis([1,Ntemp,-1.1,1.1]);
-    xlabel('Sample section of Received DSBSC Signal with Noise');
-end;
-print -djpeg Demod_figure1
-% INSERT DEMODULATION CODE:
-% INSERT DEMODULATION CODE:
-% INSERT DEMODULATION CODE: input cutoff fc and r
-% create in phase reference carrier
-%based on the carrier used in the
+    plot(sm(1:(Nsample*40)));
+    axis([1,(Nsample*40),-1.1,1.1]);
+    xlabel('Sample section of Message Signal');
+end
+print -djpeg Modulator_figure1
+% FT of message waveform
+Sm=abs(fftshift(fft(sm)));
+figure(2);
+k=0:(N-1);
+k=k-N/2;
+plot(k,Sm);
+xlabel('DFT spectrum of Message Signal');
+print -djpeg Modulator_figure2
+% INSERT MODULATION EQUATION:
+% INSERT MODULATION EQUATION:
+% INSERT MODULATION EQUATION: Inputs sm vector, kc, t and N 
+% create DSBSC modulation signal s
 t=0:(N-1);
-kc=N/16 % should be same as modulator carrier frequency
-sref=cos(2*pi*kc*t/N);% reference carrier
-% mix the reference with the input
-r1=r.*sref;
-% form reconstruction filter
-fc=kc;
-% filter with some recommended parameters
-Norder=8;K=8; % filter gain
-[f H]=lp_butterworth_oN_dft15(kc,K,N,Norder);
-% filter signal through channel via frequency domain
-S=fft(r1);R=S.*H;
-rn=real(ifft(R));
-% END OF DEMODULATION INSERT: output real vector rn that is N long
-% END OF DEMODULATION INSERT:
-% END OF DEMODULATION INSERT:
-% normalize the output to be tested
-% Bs must be scaled from about 0 to 1 so it can be thresholded at 0.5 by
-% Bcheck
-Bs=rn;
-Bs=Bs-min(Bs); % make the minimum 0
-Bs=Bs/max(Bs); % limit maximum to unity
-save 'FTSIO_Bs' Bs;
-figure(2)
+kc=N/16
+s=sm .* cos(2*pi*kc*t/N);
+% END OF MODULATION INSERT
+% END OF MODULATION INSERT
+% END OF MODULATION INSERT
+% plot AM signal
+figure(3);
 if Nbit<41
-    plot(Bs);
-    axis([1,N,-0.1,1.1]);
-    xlabel('Demodulated DSBSC Signal');
+    plot(s);
+    axis([1,N,-1.1,1.1]);
+    xlabel('DSBSC Signal');
 else
     Ntemp=Nsample*40;
-    plot(Bs(1:Ntemp));
-    axis([1,Ntemp,-0.1,1.1]);
-    xlabel('Sample section of Demodulated DSBSC Signal with Noise');
+    plot(s(1:Ntemp));
+    axis([1,Ntemp,-1.1,1.1]);
+    xlabel('Sample section of DSBSC Signal');
 end;
-print -djpeg Demod_figure2
+print -djpeg Modulator_figure3
+% FT of modulated waveform
+S=abs(fftshift(fft(s)));
+figure(4);
+k=0:(N-1);
+k=k-N/2;
+plot(k,S);
+xlabel('Spectrum of DSBSC Signal');
+print -djpeg Modulator_figure4
+% create the bit check matrix to only be used by the Bcheckxx.m file
+% YOU CANNOT PASS THIS INFORMATION TO YOUR DEMODULATOR!!
+samplepulse=zeros(1,Nsample);
+samplepulse(round(Nsample/2))=1;
+Bcheck=zeros(1,N);
+% modulate first sequence to either +1 and -1 values
+b1check(1:Nbit)=2*B(1,1:Nbit)-1;
+bchecktemp=kron(b1check,samplepulse);
+Bcheck=zeros(1,N);
+if N > (Nsample*Nbit)
+    Bcheck(1:(Nsample*Nbit))=bchecktemp(1:(Nsample*Nbit));
+else
+    Bcheck=bchecktemp;
+end
+figure(5);
+if Nbit<41
+    n=1:N;
+    plot(n,sm,n,Bcheck);
+    axis([1,N,-1.1,1.1]);
+    xlabel('Bit Check Signal');
+else
+    Ntemp=Nsample*40;
+    n=1:Ntemp;
+    plot(n,sm(1:Ntemp),n,(0.9*Bcheck(1:Ntemp)));
+    axis([1,Ntemp,-1.1,1.1]);
+    xlabel('Sample Section of Bit Check Signal');
+end;
+print -djpeg Modulator_figure5
+
+save 'FTSIO_signal' s;
+save 'FTSIO_Bcheck' Bcheck;
