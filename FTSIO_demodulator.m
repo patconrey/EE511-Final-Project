@@ -1,7 +1,7 @@
 % generate bit matrix based on groupname_Bsize.mat
 clear;
-load 'ee51116_Bsize'; % get number of bits sizes
-load 'ee51116_r';
+load 'FTSIO_Bsize'; % get number of bits sizes
+load 'FTSIO_r';
 [M,N]=size(r)
 figure(1)
 Nshowbits=8;
@@ -58,4 +58,4 @@ else
 %    axis([1,Ntemp,-0.1,1.1]);
     title('Sample section of Demodulated Signal');
 end;
-save 'ee51116_Bs' Bs;
+save 'FTSIO_Bs' Bs;

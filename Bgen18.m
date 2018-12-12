@@ -1,6 +1,6 @@
 % generate bit matrix based on groupname_Bsize.mat
 clear all;
-groupname='GroupName' % instructor enters this name to select student project
+groupname='FTSIO' % instructor enters this name to select student project
 filename=sprintf('%s_Bsize.mat',groupname);
 load (filename) % retrieve data
 filename

@@ -1,7 +1,7 @@
 % generate bit matrix based on groupname_Bsize.mat
 clear;
-load 'ee51116_B.mat';
-load 'ee51116_Bsize.mat';
+load 'FTSIO_B.mat';
+load 'FTSIO_Bsize.mat';
 % generate a real vector s, N=131072*8 or let N be less for debug process
 N=131072*8
 Nsample=floor(N/Nbit)
@@ -55,5 +55,5 @@ else
     axis([1,Ntemp,-1.1,1.1]);
     xlabel('Sample Section of Bit Check Signal');
 end;
-save 'ee51116_signal' s;
-save 'ee51116_Bcheck' Bcheck;
+save 'FTSIO_signal' s;
+save 'FTSIO_Bcheck' Bcheck;
