@@ -15,14 +15,14 @@ else
     axis([1,Ntemp,-1.1,1.1]);
     xlabel('Sample section of Received DSBSC Signal with Noise');
 end;
-print -djpeg Demod_figure1
+%print -djpeg Demod_figure1
 % INSERT DEMODULATION CODE:
 % INSERT DEMODULATION CODE:
 % INSERT DEMODULATION CODE: input cutoff fc and r
 % create in phase reference carrier
 %based on the carrier used in the
 t=0:(N-1);
-kc=N/16 % should be same as modulator carrier frequency
+kc=round(N/14.7); % should be same as modulator carrier frequency
 sref=cos(2*pi*kc*t/N);% reference carrier
 % mix the reference with the input
 r1=r.*sref;
@@ -55,4 +55,4 @@ else
     axis([1,Ntemp,-0.1,1.1]);
     xlabel('Sample section of Demodulated DSBSC Signal with Noise');
 end;
-print -djpeg Demod_figure2
+%print -djpeg Demod_figure2
