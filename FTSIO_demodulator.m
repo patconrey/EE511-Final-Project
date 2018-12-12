@@ -1,61 +1,58 @@
 % generate bit matrix based on groupname_Bsize.mat
-clear;
+clear all;
 load 'FTSIO_Bsize'; % get number of bits sizes
 load 'FTSIO_r';
 [M,N]=size(r)
 figure(1)
-Nshowbits=8;
 Nsample=floor(N/Nbit)
-if Nbit<(Nshowbits+1)
+if Nbit<41
     plot(r);
-    xlabel('Received Signal');
+    axis([1,N,-1.1,1.1]);
+    xlabel('Received DSBSC Signal');
 else
-    Ntemp=Nsample*Nshowbits;
+    Ntemp=Nsample*40;
     plot(r(1:Ntemp));
-    xlabel('Sample section of Received Signal with Noise');
+    axis([1,Ntemp,-1.1,1.1]);
+    xlabel('Sample section of Received DSBSC Signal with Noise');
 end;
-% form filter to remove high frequency noise
-% form filter
-fo=N/8;
-Norder=4;
-n=1:N;
-K=1; % filter gain
-% low pass filter
-[f Hchannel]=lp_butterworth_oN_dft15(fo,K,N,Norder);
-% % filter signal through channel
-% S=fft(r);
-% R=S.*H;
-% rn=real(ifft(R));
-% filter the noise with a moving average filter
-% Symmetric rectangle function for use with DFTs
-% Ty, Tx are the widths of the rect in the y and x directions
-% Tx and Ty must be odd values to lead to symmetry properties
-% My,Nx are the rows (y) and columns (x) of Y, respectively
-rn=r;
-d=size(rn)
-h=irect(1,1+2*floor(N/(2*Nbit)),d(1),d(2)); % filter representing pulse
-H=fft(h);
-%H=Hchannel.*H;
-h=real(ifft(H));
-size(H)
-R=fft(rn);
-size(R)
-r2=real(ifft(R.*H));
-% scale in such a way as not to move the zero level
-scale=1/(max(r2)-min(r2));
-r1=r2.*scale+0.5; % scale and offset to get mean at 0.5
-Bs=zeros(1,N);
-Bs(1:N)=r1(1:N);
-figure(2)
-if Nbit<(Nshowbits+1)
-    plot(Bs);
-%    axis([1,N,-0.1,1.1]);
-    xlabel('Demodulated Signal');
-else
-    Ntemp=Nsample*Nshowbits;
-    n=1:Ntemp;
-    plot(n,rn(n),n,Bs(1:Ntemp),n,h(1:Ntemp));
-%    axis([1,Ntemp,-0.1,1.1]);
-    title('Sample section of Demodulated Signal');
-end;
+print -djpeg Demod_figure1
+% INSERT DEMODULATION CODE:
+% INSERT DEMODULATION CODE:
+% INSERT DEMODULATION CODE: input cutoff fc and r
+% create in phase reference carrier
+%based on the carrier used in the
+t=0:(N-1);
+kc=N/16 % should be same as modulator carrier frequency
+sref=cos(2*pi*kc*t/N);% reference carrier
+% mix the reference with the input
+r1=r.*sref;
+% form reconstruction filter
+fc=kc;
+% filter with some recommended parameters
+Norder=8;K=8; % filter gain
+[f H]=lp_butterworth_oN_dft15(kc,K,N,Norder);
+% filter signal through channel via frequency domain
+S=fft(r1);R=S.*H;
+rn=real(ifft(R));
+% END OF DEMODULATION INSERT: output real vector rn that is N long
+% END OF DEMODULATION INSERT:
+% END OF DEMODULATION INSERT:
+% normalize the output to be tested
+% Bs must be scaled from about 0 to 1 so it can be thresholded at 0.5 by
+% Bcheck
+Bs=rn;
+Bs=Bs-min(Bs); % make the minimum 0
+Bs=Bs/max(Bs); % limit maximum to unity
 save 'FTSIO_Bs' Bs;
+figure(2)
+if Nbit<41
+    plot(Bs);
+    axis([1,N,-0.1,1.1]);
+    xlabel('Demodulated DSBSC Signal');
+else
+    Ntemp=Nsample*40;
+    plot(Bs(1:Ntemp));
+    axis([1,Ntemp,-0.1,1.1]);
+    xlabel('Sample section of Demodulated DSBSC Signal with Noise');
+end;
+print -djpeg Demod_figure2

@@ -1,7 +1,7 @@
 % generate groupname_Bsize.mat
 clear;
 groupname='FTSIO'
-Nbit=floor(1024)
+Nbit = 72000;
 filename=sprintf('%s_Bsize.mat',groupname)
 save(filename); % stores groupname, Nbit, Nseq in ee51112_Bsize.mat
 
