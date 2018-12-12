@@ -22,15 +22,15 @@ end;
 % create in phase reference carrier
 %based on the carrier used in the
 t=0:(N-1);
-kc=round(N/14.7); % should be same as modulator carrier frequency
+kc=round(N/13.25); % should be same as modulator carrier frequency
 sref=cos(2*pi*kc*t/N);% reference carrier
 % mix the reference with the input
 r1=r.*sref;
 % form reconstruction filter
-fc=kc;
+fc=kc-floor(kc/6.8); % original: fc = kc
 % filter with some recommended parameters
 Norder=8;K=8; % filter gain
-[f H]=lp_butterworth_oN_dft15(kc,K,N,Norder);
+[f, H]=lp_butterworth_oN_dft15(fc,K,N,Norder);
 % filter signal through channel via frequency domain
 S=fft(r1);R=S.*H;
 rn=real(ifft(R));

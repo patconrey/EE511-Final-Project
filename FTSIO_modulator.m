@@ -8,6 +8,8 @@ N=131072*8 % N is set by instructor and cannot be changed
 Nsample=floor(N/Nbit)
 % form pulse shape
 pulseshape=ones(1,Nsample);
+%pulseshape = kaiser(Nsample,0.825);
+
 % modulate sequence to either +1 and -1 values
 b1(1:Nbit)=2*B(1,1:Nbit)-1;
 stemp=kron(b1,pulseshape); % form continuous time approximation of message
@@ -16,11 +18,7 @@ if N > (Nsample*Nbit)
     sm(1:(Nsample*Nbit))=stemp(1:(Nsample*Nbit));
 else
     sm=stemp;
-<<<<<<< HEAD
 end
-=======
-end;
->>>>>>> DSBSC
 size(sm) % verify shape
 % plot message signal or a section of the message signal
 figure(1);
@@ -32,13 +30,7 @@ else
     plot(sm(1:(Nsample*40)));
     axis([1,(Nsample*40),-1.1,1.1]);
     xlabel('Sample section of Message Signal');
-<<<<<<< HEAD
 end
-print -djpeg Modulator_figure1
-=======
-end;
-%print -djpeg Modulator_figure1
->>>>>>> DSBSC
 % FT of message waveform
 Sm=abs(fftshift(fft(sm)));
 figure(2);
@@ -46,21 +38,12 @@ k=0:(N-1);
 k=k-N/2;
 plot(k,Sm);
 xlabel('DFT spectrum of Message Signal');
-<<<<<<< HEAD
-print -djpeg Modulator_figure2
-=======
-%print -djpeg Modulator_figure2
->>>>>>> DSBSC
 % INSERT MODULATION EQUATION:
 % INSERT MODULATION EQUATION:
 % INSERT MODULATION EQUATION: Inputs sm vector, kc, t and N 
 % create DSBSC modulation signal s
 t=0:(N-1);
-<<<<<<< HEAD
-kc=N/16
-=======
-kc=round(N/14.7)
->>>>>>> DSBSC
+kc=round(N/13.25) % round(N/13.25)
 s=sm .* cos(2*pi*kc*t/N);
 % END OF MODULATION INSERT
 % END OF MODULATION INSERT
@@ -76,12 +59,7 @@ else
     plot(s(1:Ntemp));
     axis([1,Ntemp,-1.1,1.1]);
     xlabel('Sample section of DSBSC Signal');
-end;
-<<<<<<< HEAD
-print -djpeg Modulator_figure3
-=======
-%print -djpeg Modulator_figure3
->>>>>>> DSBSC
+end
 % FT of modulated waveform
 S=abs(fftshift(fft(s)));
 figure(4);
@@ -89,11 +67,6 @@ k=0:(N-1);
 k=k-N/2;
 plot(k,S);
 xlabel('Spectrum of DSBSC Signal');
-<<<<<<< HEAD
-print -djpeg Modulator_figure4
-=======
-%print -djpeg Modulator_figure4
->>>>>>> DSBSC
 % create the bit check matrix to only be used by the Bcheckxx.m file
 % YOU CANNOT PASS THIS INFORMATION TO YOUR DEMODULATOR!!
 samplepulse=zeros(1,Nsample);
@@ -107,11 +80,7 @@ if N > (Nsample*Nbit)
     Bcheck(1:(Nsample*Nbit))=bchecktemp(1:(Nsample*Nbit));
 else
     Bcheck=bchecktemp;
-<<<<<<< HEAD
 end
-=======
-end;
->>>>>>> DSBSC
 figure(5);
 if Nbit<41
     n=1:N;
@@ -125,11 +94,6 @@ else
     axis([1,Ntemp,-1.1,1.1]);
     xlabel('Sample Section of Bit Check Signal');
 end;
-<<<<<<< HEAD
-print -djpeg Modulator_figure5
-=======
-%print -djpeg Modulator_figure5
->>>>>>> DSBSC
 
 save 'FTSIO_signal' s;
 save 'FTSIO_Bcheck' Bcheck;
