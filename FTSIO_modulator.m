@@ -7,13 +7,15 @@ N=131072*8 % N is set by instructor and cannot be changed
 % CREATE THE MESSAGE SIGNAL
 Nsample=floor(N/Nbit)
 % form pulse shape
-pulseshape=ones(1,Nsample);
-%pulseshape = kaiser(Nsample,0.825);
+
+%pulseshape=ones(1,Nsample);
+pulseshape = kaiser(Nsample,0.825);
 
 % modulate sequence to either +1 and -1 values
 b1(1:Nbit)=2*B(1,1:Nbit)-1;
 stemp=kron(b1,pulseshape); % form continuous time approximation of message
 sm=-ones(1,N);
+
 if N > (Nsample*Nbit)
     sm(1:(Nsample*Nbit))=stemp(1:(Nsample*Nbit));
 else
@@ -38,17 +40,9 @@ k=0:(N-1);
 k=k-N/2;
 plot(k,Sm);
 xlabel('DFT spectrum of Message Signal');
-% INSERT MODULATION EQUATION:
-% INSERT MODULATION EQUATION:
-% INSERT MODULATION EQUATION: Inputs sm vector, kc, t and N 
-% create DSBSC modulation signal s
-t=0:(N-1);
-kc=round(N/13.25) % round(N/13.25)
-s=sm .* cos(2*pi*kc*t/N);
-% END OF MODULATION INSERT
-% END OF MODULATION INSERT
-% END OF MODULATION INSERT
-% plot AM signal
+
+s=sm;
+
 figure(3);
 if Nbit<41
     plot(s);
