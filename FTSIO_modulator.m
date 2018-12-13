@@ -9,7 +9,7 @@ Nsample=floor(N/Nbit)
 % form pulse shape
 
 %pulseshape=ones(1,Nsample);
-pulseshape = kaiser(Nsample,0.825);
+pulseshape = kaiser(Nsample,.845);
 
 % modulate sequence to either +1 and -1 values
 b1(1:Nbit)=2*B(1,1:Nbit)-1;
